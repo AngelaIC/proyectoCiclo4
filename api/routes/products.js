@@ -3,7 +3,6 @@ import { createProduct, deleteProduct, getProduct, getProducts, updateProduct } 
 import Product from "../models/Product.js";
 const router = express.Router();
 
-//CRUD
 //Create
 router.post("/", createProduct);
 

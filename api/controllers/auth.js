@@ -1,5 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
+import { createError} from "../utils/error.js";
+import jwt from "jsonwebtoken";
 
 //Para crear el registro de usuario nuevo
 export const register = async (req, res, next) => {
@@ -15,7 +17,7 @@ export const register = async (req, res, next) => {
 
         await newUser.save()
         res.status(200).send("Usuario creado, estado : Pendiente por aprobación de un administrador. ");
-    } catch (error) {
+    } catch (err) {
         next(err);
         
     }
@@ -23,9 +25,20 @@ export const register = async (req, res, next) => {
 //Para crear el login
 export const login = async (req, res, next) => {
     try {
-        const user = User.findOne({nombreusuario:req.body.username})
-        res.status(200).send("STONE STORE LE DA LA BIENVENIDA");
-    } catch (error) {
+        // Verifica que el Usuario escriba algo en el campo del nombre de usuario
+        const user = await User.findOne({nombreusuario:req.body.username})
+        if(!user) return next(createError(404, "Por favor valide este campo..."));
+
+        //Verifica que el Usuario escriba algo en el campo de contraseña (password)
+        const isPasswordCorrect = await bcrypt.compare(req.body.password, user.password)
+        if(!isPasswordCorrect) 
+            return next(createError(400, "La contraseña no es válida"));
+
+        const token = jwt.sign({id:user._id, isAdmin: user.isAdmin },"kimy" )    
+
+        const {password, isAdmin, ...otherDetails } = user._doc;
+        res.status(200).json(...otherDetails);
+    } catch (err) {
         next(err);
         
     }
