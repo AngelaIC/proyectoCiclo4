@@ -1,5 +1,6 @@
 import express from "express";
 import Product from "../models/Product.js"
+import { createError } from "../utils/error.js";
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ router.put("/:id", async (req, res) => {
     try {
         const updatedProduct = await Product.findByIdAndUpdate(
             req.params.id, 
-            { $et: req.body },
+            { $set: req.body },
             { new: true }
         );
         res.status(200).json(updatedProduct);
@@ -52,14 +53,13 @@ router.get("/:id", async (req, res) => {
     }
 });
 //Get all
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
+
     try {
-        const products = await Product.find(
-            req.params.id
-        );
+        const products = await Product.find();
         res.status(200).json(products);
     } catch (err) {
-        res.status(500).json(err);
+        next(err);
     }
 });
 

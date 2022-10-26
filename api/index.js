@@ -35,6 +35,17 @@ app.use("/api/categories", categoriesRoute);
 app.use("/api/products", productsRoute);
 app.use("/api/users", usersRoute);
 
+app.use((err, req, res, next) => {
+    const errorStatus = err.status || 500
+    const errorMessage = err.message || "Ya valio"
+    return res.status(errorStatus).json({
+        success: false,
+        status: errorStatus,
+        message: errorMessage,
+        stack: err.stack,
+    });
+});
+
 //Puerto en el que se estableció el backend
 app.listen(4000, () => {
     connect()
