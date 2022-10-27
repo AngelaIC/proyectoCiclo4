@@ -1,10 +1,11 @@
-import express from "express"
-import dotenv from "dotenv"
-import mongoose from "mongoose"
-import authRoute from "./routes/auth.js"
-import categoriesRoute from "./routes/categories.js"
-import productsRoute from "./routes/products.js"
-import usersRoute from "./routes/users.js"
+import express from "express";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import authRoute from "./routes/auth.js";
+import usersRoute from "./routes/users.js";
+import productsRoute from "./routes/products.js";
+import categoriesRoute from "./routes/categories.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
 dotenv.config();
@@ -28,7 +29,8 @@ mongoose.connection.on("connected", () =>{
 })
 
 //Software intermedio (middlewares)
-app.use(express.json())
+app.use(cookieParser());
+app.use(express.json());
 
 app.use("/api/auth", authRoute);
 app.use("/api/categories", categoriesRoute);
